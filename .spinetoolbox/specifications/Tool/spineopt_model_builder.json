@@ -1,0 +1,14 @@
+{
+    "name": "spineopt_model_builder",
+    "tooltype": "python",
+    "includes": [
+        "build_SpineOpt_base_model.py"
+    ],
+    "description": "",
+    "inputfiles": [],
+    "inputfiles_opt": [],
+    "outputfiles": [],
+    "cmdline_args": [],
+    "execute_in_work": false,
+    "includes_main_path": "../../../scripts"
+}

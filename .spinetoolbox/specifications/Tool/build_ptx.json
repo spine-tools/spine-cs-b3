@@ -1,0 +1,14 @@
+{
+    "name": "build_PtX",
+    "tooltype": "python",
+    "includes": [
+        "build_PtX.py"
+    ],
+    "description": "",
+    "inputfiles": [],
+    "inputfiles_opt": [],
+    "outputfiles": [],
+    "cmdline_args": [],
+    "execute_in_work": false,
+    "includes_main_path": "../../../scripts"
+}

@@ -1,0 +1,14 @@
+﻿# From Spinetoolbox’s requirements.txt
+cchardet!=2.1.6
+matplotlib!=3.2.1
+
+# Required packages. Please specify a tag or commit hash after '@' in the url
+spinedb_api @ git+https://github.com/Spine-project/Spine-Database-API.git@master
+spine_engine @ git+https://github.com/Spine-project/spine-engine.git@master
+spinetoolbox @ git+https://github.com/Spine-project/Spine-Toolbox@master
+
+### Examples####################################################################
+## Can also install a package for development
+# --editable git+https://github.com/Spine-project/spine-engine.git@master#egg=spine_engine
+################################################################################
+

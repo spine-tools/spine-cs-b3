@@ -1,0 +1,11 @@
+.idea/
+log/
+logs/
+*.log
+output/
+items/
+Temp/
+*.sqlite
+project.json
+*.bak
+*.pyc

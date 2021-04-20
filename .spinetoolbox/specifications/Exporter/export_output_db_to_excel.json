@@ -1,0 +1,54 @@
+{
+    "item_type": "Exporter",
+    "output_format": "Excel",
+    "name": "export_output_db_to_excel",
+    "description": "",
+    "mappings": {
+        "Mapping 1 - objectives - total costs": {
+            "type": "relationship_parameter_values",
+            "mapping": [
+                {
+                    "map_type": "FixedValue",
+                    "position": "table_name",
+                    "value": "total costs"
+                },
+                {
+                    "map_type": "RelationshipClass",
+                    "position": -1,
+                    "header": "relationship class",
+                    "filter_re": "report__model"
+                },
+                {
+                    "map_type": "ParameterDefinition",
+                    "position": "hidden",
+                    "filter_re": "total_costs"
+                },
+                {
+                    "map_type": "ParameterValueList",
+                    "position": "hidden",
+                    "ignorable": true
+                },
+                {
+                    "map_type": "Relationship",
+                    "position": "hidden"
+                },
+                {
+                    "map_type": "Alternative",
+                    "position": -2,
+                    "header": "scenarios"
+                },
+                {
+                    "map_type": "ParameterValueIndex",
+                    "position": 0
+                },
+                {
+                    "map_type": "ExpandedValue",
+                    "position": 3
+                }
+            ],
+            "enabled": true,
+            "always_export_header": true,
+            "use_fixed_table_name": true
+        }
+    }
+}

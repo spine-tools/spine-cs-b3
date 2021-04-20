@@ -1,0 +1,18 @@
+{
+    "name": "SpineOpt",
+    "tooltype": "julia",
+    "includes": [
+        "run_SpineOpt.jl"
+    ],
+    "description": "",
+    "inputfiles": [
+        "toolbox_input/data_store.sqlite"
+    ],
+    "inputfiles_opt": [],
+    "outputfiles": [
+        "toolbox_output_predefined/output_db.sqlite"
+    ],
+    "cmdline_args": [],
+    "execute_in_work": false,
+    "includes_main_path": "../../.."
+}

@@ -1,0 +1,14 @@
+{
+    "name": "build_spineopt_b3_scenarios",
+    "tooltype": "python",
+    "includes": [
+        "spineopt_structure.py"
+    ],
+    "description": "",
+    "inputfiles": [],
+    "inputfiles_opt": [],
+    "outputfiles": [],
+    "cmdline_args": [],
+    "execute_in_work": false,
+    "includes_main_path": "../../../scripts"
+}
