@@ -2,11 +2,9 @@
 log/
 logs/
 *.log
-Reference/
-Temp/
 output/
-items/
-*.sqlite
-*.gdx
-project.json
 *.bak
+#items/
+#*.sqlite
+#*.gdx
+#project.json
