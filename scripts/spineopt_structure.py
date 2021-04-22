@@ -82,29 +82,33 @@ def spineopt_b3_default_model(_model_name: str, _alternative, _target_spineopt_d
     return _temp_importer
 
 
-def spineopt_b3_model_horizon_alternatives(_model_name: str, _target_spineopt_db=None):
+def spineopt_model_horizon_alternatives(
+        alternative_name: str, model_start: pd.Timestamp, model_end: pd.Timestamp,
+        _model_name: str, _target_spineopt_db=None
+):
+    """
+    :param alternative_name:
+    :param model_start: obtained from pd.Timestamp(year=2021, month=1, day=1, hour=0)
+    :param model_end: obtained from pd.Timestamp(year=2021, month=2, day=1, hour=0)
+    :param _model_name:
+    :param _target_spineopt_db:
+    :return:
+    """
     _temp_importer = SpineDBImporter()
 
-    alternative_1 = "Jan"
-    alternative_2 = "Jul"
-
-    _temp_importer.alternatives += [alternative_1, alternative_2]
+    _temp_importer.alternatives.append(alternative_name)
 
     _temp_importer.objects.append(("model", _model_name))
     _temp_importer.object_parameter_values += [
         ("model", _model_name, "model_start",
-         {"type": "date_time", "data": str(pd.Timestamp(year=2021, month=1, day=1, hour=0))}, alternative_1),
+         {"type": "date_time", "data": str(model_start)}, alternative_name),
         ("model", _model_name, "model_end",
-         {"type": "date_time", "data": str(pd.Timestamp(year=2021, month=2, day=1, hour=0))}, alternative_1),
-        ("model", _model_name, "model_start",
-         {"type": "date_time", "data": str(pd.Timestamp(year=2021, month=7, day=1, hour=0))}, alternative_2),
-        ("model", _model_name, "model_end",
-         {"type": "date_time", "data": str(pd.Timestamp(year=2021, month=8, day=1, hour=0))}, alternative_2),
+         {"type": "date_time", "data": str(model_end)}, alternative_name),
     ]
 
     if _target_spineopt_db:
         _temp_importer.import_data(_target_spineopt_db)
-    return _temp_importer, alternative_1, alternative_2
+    return _temp_importer
 
 
 def spineopt_b3_temporal_alternative(model_name: str, _target_spineopt_db=None, **kwargs):
@@ -273,8 +277,18 @@ if __name__ == "__main__":
         node=['PtL_H2_tank', 'PtL_gasoline_tank'], unit=['PtL_gasoline_production']
     )
 
-    model_horizon_importer, horizon_alt_1, horizon_alt_2 = spineopt_b3_model_horizon_alternatives(
-        "CS_B3_75FI_excl_hydro_and_reserves", _target_spineopt_db=spineopt_model_db
+    horizon_alt_1 = [
+        'Jan', pd.Timestamp(year=2021, month=1, day=1, hour=0), pd.Timestamp(year=2021, month=2, day=1, hour=0)
+    ]
+    model_horizon_importer = spineopt_model_horizon_alternatives(
+        *horizon_alt_1, "CS_B3_75FI_excl_hydro_and_reserves", _target_spineopt_db=spineopt_model_db
+    )
+
+    horizon_alt_2 = [
+        'Jul', pd.Timestamp(year=2021, month=7, day=1, hour=0), pd.Timestamp(year=2021, month=8, day=1, hour=0)
+    ]
+    model_horizon_importer += spineopt_model_horizon_alternatives(
+        *horizon_alt_2, "CS_B3_75FI_excl_hydro_and_reserves", _target_spineopt_db=spineopt_model_db
     )
 
     alternative_category_1 = [
