@@ -5,6 +5,6 @@ logs/
 output/
 *.bak
 #items/
-#*.sqlite
-#*.gdx
+*.sqlite
+*.gdx
 #project.json
