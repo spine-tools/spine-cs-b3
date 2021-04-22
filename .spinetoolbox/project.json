@@ -1,0 +1,513 @@
+{
+    "project": {
+        "version": 6,
+        "name": "Case study B3 publication",
+        "description": "Spine case study B3 Planning a low emission transport sector",
+        "specifications": {
+            "Importer": [
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "scripts/mappings/gdx2spinedb_v1.3.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "scripts/mappings/gdx2spinedb_ts-cf_influx.json"
+                }
+            ],
+            "Tool": [
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/spineopt_model_builder.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/spineopt.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/build_transport_sector.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/build_ptx.json"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Tool/build_spineopt_b3_scenarios.json"
+                }
+            ],
+            "Exporter": [
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/specifications/Exporter/export_output_db_to_excel.json"
+                }
+            ]
+        },
+        "connections": [
+            {
+                "from": [
+                    "SpineOpt_B3",
+                    "right"
+                ],
+                "to": [
+                    "output_db",
+                    "left"
+                ]
+            },
+            {
+                "from": [
+                    "data_energy_system_ts",
+                    "right"
+                ],
+                "to": [
+                    "bbgdx2spinedb_ts",
+                    "left"
+                ]
+            },
+            {
+                "from": [
+                    "bbgdx2spinedb_ts",
+                    "right"
+                ],
+                "to": [
+                    "spinedb",
+                    "left"
+                ]
+            },
+            {
+                "from": [
+                    "data_energy_system",
+                    "right"
+                ],
+                "to": [
+                    "bbgdx2spinedb_main",
+                    "left"
+                ]
+            },
+            {
+                "from": [
+                    "bbgdx2spinedb_main",
+                    "right"
+                ],
+                "to": [
+                    "spinedb",
+                    "left"
+                ]
+            },
+            {
+                "from": [
+                    "spinedb",
+                    "right"
+                ],
+                "to": [
+                    "spineopt_model_builder",
+                    "bottom"
+                ]
+            },
+            {
+                "from": [
+                    "spineopt_model_builder",
+                    "left"
+                ],
+                "to": [
+                    "spineopt_db",
+                    "bottom"
+                ]
+            },
+            {
+                "from": [
+                    "spineopt_db",
+                    "right"
+                ],
+                "to": [
+                    "SpineOpt_B3",
+                    "left"
+                ]
+            },
+            {
+                "from": [
+                    "data_other_modules",
+                    "right"
+                ],
+                "to": [
+                    "spineopt_transport_sector_builder",
+                    "left"
+                ]
+            },
+            {
+                "from": [
+                    "spineopt_transport_sector_builder",
+                    "right"
+                ],
+                "to": [
+                    "spineopt_db",
+                    "left"
+                ]
+            },
+            {
+                "from": [
+                    "spineopt_PtX_builder",
+                    "right"
+                ],
+                "to": [
+                    "spineopt_db",
+                    "left"
+                ]
+            },
+            {
+                "from": [
+                    "spineopt_scenario_builder",
+                    "right"
+                ],
+                "to": [
+                    "spineopt_db",
+                    "left"
+                ]
+            },
+            {
+                "from": [
+                    "output_db",
+                    "bottom"
+                ],
+                "to": [
+                    "output exporter",
+                    "left"
+                ]
+            },
+            {
+                "from": [
+                    "output exporter",
+                    "bottom"
+                ],
+                "to": [
+                    "Result file",
+                    "right"
+                ]
+            },
+            {
+                "from": [
+                    "data_other_modules",
+                    "right"
+                ],
+                "to": [
+                    "spineopt_PtX_builder",
+                    "left"
+                ]
+            },
+            {
+                "from": [
+                    "data_other_modules",
+                    "bottom"
+                ],
+                "to": [
+                    "spineopt_model_builder",
+                    "bottom"
+                ]
+            }
+        ]
+    },
+    "items": {
+        "spineopt_db": {
+            "type": "Data Store",
+            "description": "",
+            "x": 29.40428778175238,
+            "y": -123.50617661661045,
+            "url": {
+                "dialect": "sqlite",
+                "username": "",
+                "password": "",
+                "host": "",
+                "port": "",
+                "database": {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/items/spineopt_db/data_store.sqlite"
+                }
+            },
+            "cancel_on_error": true
+        },
+        "spinedb": {
+            "type": "Data Store",
+            "description": "energy system data",
+            "x": -19.16032259996456,
+            "y": 171.42009764891338,
+            "url": {
+                "dialect": "sqlite",
+                "username": "",
+                "password": "",
+                "host": "",
+                "port": "",
+                "database": {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/items/spinedb/VabiSys_data_complete.sqlite"
+                }
+            },
+            "cancel_on_error": true
+        },
+        "output_db": {
+            "type": "Data Store",
+            "description": "",
+            "x": 301.04759156157553,
+            "y": -126.04131686493287,
+            "url": {
+                "dialect": "sqlite",
+                "username": "",
+                "password": "",
+                "host": "",
+                "port": "",
+                "database": {
+                    "type": "path",
+                    "relative": true,
+                    "path": ".spinetoolbox/items/output_db/output_db.sqlite"
+                }
+            },
+            "cancel_on_error": true
+        },
+        "data_energy_system": {
+            "type": "Data Connection",
+            "description": "VabiSys energy system datasets",
+            "x": -330.0844011566833,
+            "y": 64.08503579039352,
+            "references": [
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "data/VabiSys_input_v1.3.gdx"
+                }
+            ]
+        },
+        "data_energy_system_ts": {
+            "type": "Data Connection",
+            "description": "some ts values to overwrite the main data",
+            "x": -343.4847679290792,
+            "y": 179.04447999046383,
+            "references": [
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "data/realized_forecasts.gdx"
+                }
+            ]
+        },
+        "data_other_modules": {
+            "type": "Data Connection",
+            "description": "",
+            "x": -316.4688220437195,
+            "y": -79.94216207335276,
+            "references": [
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "data/B3_transport_w_allEV_no_discharge.xlsx"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "data/B3_transport_w_lowEV_all_discharge.xlsx"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "data/B3_transport_w_lowEV_no_discharge.xlsx"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "data/B3_transport_w_null.xlsx"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "data/B3_transport_w_allEV_all_discharge.xlsx"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "data/B3_PtX.xlsx"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "data/B3_PtX_null.xlsx"
+                }
+            ]
+        },
+        "Result file": {
+            "type": "Data Connection",
+            "description": "",
+            "x": 252.70702922389466,
+            "y": 53.59702399172956,
+            "references": []
+        },
+        "spineopt_model_builder": {
+            "type": "Tool",
+            "description": "",
+            "x": 95.80258988827593,
+            "y": 45.19089331888571,
+            "specification": "spineopt_model_builder",
+            "execute_in_work": false,
+            "cmd_line_args": [
+                {
+                    "type": "resource",
+                    "arg": "db_url@spinedb"
+                },
+                {
+                    "type": "resource",
+                    "arg": "db_url@spineopt_db"
+                },
+                {
+                    "type": "resource",
+                    "arg": "spineopt_template.json"
+                }
+            ]
+        },
+        "SpineOpt_B3": {
+            "type": "Tool",
+            "description": "",
+            "x": 174.8006783453111,
+            "y": -124.66383588373418,
+            "specification": "SpineOpt",
+            "execute_in_work": false,
+            "cmd_line_args": [
+                {
+                    "type": "resource",
+                    "arg": "db_url@spineopt_db"
+                },
+                {
+                    "type": "resource",
+                    "arg": "db_url@output_db"
+                }
+            ],
+            "options": {
+                "julia_sysimage": ""
+            }
+        },
+        "spineopt_transport_sector_builder": {
+            "type": "Tool",
+            "description": "",
+            "x": -72.44923480902176,
+            "y": -6.888406678846501,
+            "specification": "build_transport_sector",
+            "execute_in_work": false,
+            "cmd_line_args": [
+                {
+                    "type": "resource",
+                    "arg": "db_url@spineopt_db"
+                },
+                {
+                    "type": "resource",
+                    "arg": "B3_transport_w_allEV_all_discharge.xlsx"
+                },
+                {
+                    "type": "resource",
+                    "arg": "B3_transport_w_allEV_no_discharge.xlsx"
+                },
+                {
+                    "type": "resource",
+                    "arg": "B3_transport_w_lowEV_all_discharge.xlsx"
+                },
+                {
+                    "type": "resource",
+                    "arg": "B3_transport_w_lowEV_no_discharge.xlsx"
+                },
+                {
+                    "type": "resource",
+                    "arg": "B3_transport_w_null.xlsx"
+                }
+            ]
+        },
+        "spineopt_PtX_builder": {
+            "type": "Tool",
+            "description": "",
+            "x": -152.78054745932818,
+            "y": -105.475906932221,
+            "specification": "build_PtX",
+            "execute_in_work": false,
+            "cmd_line_args": [
+                {
+                    "type": "resource",
+                    "arg": "db_url@spineopt_db"
+                },
+                {
+                    "type": "resource",
+                    "arg": "B3_PtX_null.xlsx"
+                },
+                {
+                    "type": "resource",
+                    "arg": "B3_PtX.xlsx"
+                }
+            ]
+        },
+        "spineopt_scenario_builder": {
+            "type": "Tool",
+            "description": "",
+            "x": -150.87319395601367,
+            "y": -201.48131926498883,
+            "specification": "build_spineopt_b3_scenarios",
+            "execute_in_work": false,
+            "cmd_line_args": [
+                {
+                    "type": "resource",
+                    "arg": "db_url@spineopt_db"
+                }
+            ]
+        },
+        "bbgdx2spinedb_main": {
+            "type": "Importer",
+            "description": "For bbgdx v1.3",
+            "x": -192.63918554071276,
+            "y": 101.61592192449844,
+            "specification": "gdx2spinedb_v1.3",
+            "cancel_on_error": true,
+            "file_selection": [
+                [
+                    "VabiSys_input_v1.3.gdx",
+                    true
+                ]
+            ]
+        },
+        "bbgdx2spinedb_ts": {
+            "type": "Importer",
+            "description": "For bbgdx v1.3",
+            "x": -194.71681909979196,
+            "y": 205.4813192649888,
+            "specification": "gdx2spinedb_ts_cf_influx",
+            "cancel_on_error": true,
+            "file_selection": [
+                [
+                    "realized_forecasts.gdx",
+                    true
+                ]
+            ]
+        },
+        "output exporter": {
+            "type": "Exporter",
+            "description": "",
+            "x": 370.98476792907917,
+            "y": -27.05521080363647,
+            "databases": [
+                {
+                    "output_file_name": "Results - total costs.xlsx",
+                    "database_url": {
+                        "type": "file_url",
+                        "relative": true,
+                        "path": ".spinetoolbox/items/output_db/output_db.sqlite",
+                        "scheme": "sqlite"
+                    }
+                }
+            ],
+            "output_time_stamps": false,
+            "cancel_on_error": true,
+            "specification": "export_output_db_to_excel"
+        }
+    }
+}
