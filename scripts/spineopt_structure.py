@@ -111,62 +111,63 @@ def spineopt_model_horizon_alternatives(
     return _temp_importer
 
 
-def spineopt_b3_temporal_alternative(model_name: str, _target_spineopt_db=None, **kwargs):
+def spineopt_temporal_block_structure(
+        model_name: str, temporal_block_name: str, is_relative: bool = True, is_default: bool = False,
+        block_start: str = None, block_end: str = None, resolution: str = None, alternative=None,
+        _target_spineopt_db=None, **kwargs
+):
     """
     :param model_name:
-    :param _target_spineopt_db:
+    :param temporal_block_name:
+    :param is_relative: if True, the block start and end argument should be a duration, otherwise a datetime
+    :param is_default: whether or not the imported temporal blocks are default to the model
+    :param block_start: duration (see resolution) or
+                        datetime string: 'YYYY-MM-DD hh:mm:ss' or str(pandas.Timestamp()) or str(datetime.datetime())
+    :param block_end: same as the above
+    :param resolution: 1s, 1m, 1h, 1D, 1M, 1Y
+    :param alternative: ['alternative_name', 'description'] or simply 'alternative_name', "Base" is default for None
+    :param is_default: whether or not the imported temporal blocks are default to the model
+    :param _target_spineopt_db: an instance of gdx2spinedb.spinedb.SpineIO, claimed via io_config.open_spinedb()
     :param kwargs: node = [node_name_1, node_name_2], unit = [unit_name_1, unit_name_2]
     :return:
     """
     _temp_importer = SpineDBImporter()
-    temporal_block_1 = "tb3_fuel"
-    temporal_block_2 = "tb4_fuel_look_ahead"
-    _alternative = "Base"
-    active_alternative = "low_resolution"
 
-    _temp_importer.alternatives.append([active_alternative, "for PtL nodes with storage"])
+    if alternative:
+        _temp_importer.alternatives.append(alternative)
+    if all([alternative, not isinstance(alternative, str)]):
+        # use only the name of alternative
+        alternative = alternative[0]
 
-    _temp_importer.objects += [
-        ("model", model_name),
-        ("temporal_block", temporal_block_1),
-        ("temporal_block", temporal_block_2),
-    ]
+    _temp_importer.objects += [("model", model_name), ("temporal_block", temporal_block_name)]
 
+    data_type = "duration"
+    if not is_relative:
+        data_type = "date_time"
+
+    mapping = {"block_start": block_start, "block_end": block_end, "resolution": resolution}
     _temp_importer.object_parameter_values += [
-        ("temporal_block", temporal_block_1, "block_start", {"type": "duration", "data": "0h"}, _alternative),
-        ("temporal_block", temporal_block_1, "block_end", {"type": "duration", "data": "1D"}, _alternative),
-        ("temporal_block", temporal_block_1, "resolution", {"type": "duration", "data": "1h"}, _alternative),
-        ("temporal_block", temporal_block_1, "resolution", {"type": "duration", "data": "8h"}, active_alternative),
-        ("temporal_block", temporal_block_2, "block_start", {"type": "duration", "data": "1D"}, _alternative),
-        ("temporal_block", temporal_block_2, "block_end", {"type": "duration", "data": "2D"}, _alternative),
-        ("temporal_block", temporal_block_2, "resolution", {"type": "duration", "data": "8h"}, _alternative),
-        ("temporal_block", temporal_block_2, "resolution", {"type": "duration", "data": "1D"}, active_alternative),
+        ("temporal_block", temporal_block_name, k, {"type": data_type, "data": v}, alternative)
+        if alternative else ("temporal_block", temporal_block_name, k, {"type": data_type, "data": v})
+        for k, v in mapping.items() if v
     ]
 
-    _temp_importer.relationships += [
-        ("model__temporal_block", (model_name, temporal_block_1)),
-        ("model__temporal_block", (model_name, temporal_block_2)),
-    ]
+    _temp_importer.relationships.append(("model__temporal_block", (model_name, temporal_block_name)))
+    if is_default:
+        _temp_importer.relationships.append(("model__default_temporal_block", (model_name, temporal_block_name)))
 
     for k, v in kwargs.items():
         if k == "node":
-            for node in v:
-                _temp_importer.relationships += [
-                    ("node__temporal_block", (node, temporal_block_1)),
-                    ("node__temporal_block", (node, temporal_block_2)),
-                ]
+            _temp_importer.relationships += [("node__temporal_block", (node, temporal_block_name)) for node in v]
         elif k == "unit":
-            for unit in v:
-                _temp_importer.relationships += [
-                    ("units_on__temporal_block", (unit, temporal_block_1)),
-                    ("units_on__temporal_block", (unit, temporal_block_2)),
-                ]
+            _temp_importer.relationships += [("units_on__temporal_block", (unit, temporal_block_name)) for unit in v]
         else:
             continue
 
     if _target_spineopt_db:
         _temp_importer.import_data(_target_spineopt_db)
-    return _temp_importer, active_alternative
+    return _temp_importer
+
 
 def default_report_output(_target_spineopt_db=None, _model_name: str = None):
     """
@@ -272,8 +273,27 @@ if __name__ == "__main__":
     spineopt_model_db = io_config.open_spinedb(dir_spineopt_db, create_new_db=False)
 
     # model name is defined in build_SpineOpt_model_b3.py, names for storage nodes are defined in build_PtX.py
-    tb_importer, tb_alternative = spineopt_b3_temporal_alternative(
-        "CS_B3_75FI_excl_hydro_and_reserves", _target_spineopt_db=spineopt_model_db,
+    tb_alternative = "low_resolution"
+    # reference alternative
+    tb_importer = spineopt_temporal_block_structure(
+        "CS_B3_75FI_excl_hydro_and_reserves", "tb3_fuel", is_relative=True, is_default=False,
+        block_start="0h", block_end="1D", resolution="1h",
+        node=['PtL_H2_tank', 'PtL_gasoline_tank'], unit=['PtL_gasoline_production']
+    )
+    tb_importer += spineopt_temporal_block_structure(
+        "CS_B3_75FI_excl_hydro_and_reserves", "tb4_fuel_look_ahead", is_relative=True, is_default=False,
+        block_start="1D", block_end="2D", resolution="8h", _target_spineopt_db=spineopt_model_db,
+        node=['PtL_H2_tank', 'PtL_gasoline_tank'], unit=['PtL_gasoline_production']
+    )
+    # active alternative
+    tb_importer = spineopt_temporal_block_structure(
+        "CS_B3_75FI_excl_hydro_and_reserves", "tb3_fuel", is_relative=True, is_default=False,
+        resolution="8h", alternative=[tb_alternative, "for PtL nodes with storage"],
+        node=['PtL_H2_tank', 'PtL_gasoline_tank'], unit=['PtL_gasoline_production']
+    )
+    tb_importer += spineopt_temporal_block_structure(
+        "CS_B3_75FI_excl_hydro_and_reserves", "tb4_fuel_look_ahead", is_relative=True, is_default=False,
+        resolution="1D", alternative=[tb_alternative, "for PtL nodes with storage"], _target_spineopt_db=spineopt_model_db,
         node=['PtL_H2_tank', 'PtL_gasoline_tank'], unit=['PtL_gasoline_production']
     )
 
