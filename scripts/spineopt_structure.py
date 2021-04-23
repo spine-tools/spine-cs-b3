@@ -14,11 +14,12 @@ Functions to configure the structure of a SpineOpt model from SpineDB database.
 import sys
 import os
 import pandas as pd
+from datetime import datetime
 
-dirname = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(os.path.join(dirname, 'backbone-to-spineopt'))
+dir_name = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.join(dir_name, 'backbone-to-spineopt'))
 from gdx2spinedb import io_config
-from gdx2spinedb.import_ts import SpineDBImporter, generate_time_index
+from gdx2spinedb.import_ts import SpineDBImporter
 
 
 # create model objects and the corresponding structures, an example of the "Base" alternative
@@ -83,28 +84,38 @@ def spineopt_b3_default_model(_model_name: str, _alternative, _target_spineopt_d
 
 
 def spineopt_model_horizon_alternatives(
-        alternative_name: str, model_start: pd.Timestamp, model_end: pd.Timestamp,
-        _model_name: str, _target_spineopt_db=None
+        model_name: str, model_start: str = None, model_end: str = None, roll_forward: str = None,
+        alternative=None, _target_spineopt_db=None
 ):
     """
-    :param alternative_name:
-    :param model_start: obtained from pd.Timestamp(year=2021, month=1, day=1, hour=0)
-    :param model_end: obtained from pd.Timestamp(year=2021, month=2, day=1, hour=0)
-    :param _model_name:
+    :param model_name:
+    :param alternative: ['alternative_name', 'description'] or simply 'alternative_name', "Base" is default for None
+    :param roll_forward: 1s, 1m, 1h, 1D, 1M, 1Y
+    :param model_start: datetime string: 'YYYY-MM-DD hh:mm:ss' or str(pandas.Timestamp()) or str(datetime.datetime())
+    :param model_end: datetime string: 'YYYY-MM-DD hh:mm:ss' or str(pandas.Timestamp()) or str(datetime.datetime())
     :param _target_spineopt_db:
     :return:
     """
     _temp_importer = SpineDBImporter()
 
-    _temp_importer.alternatives.append(alternative_name)
+    if alternative:
+        _temp_importer.alternatives.append(alternative)
+    if all([alternative, not isinstance(alternative, str)]):
+        # use only the name of alternative
+        alternative = alternative[0]
 
-    _temp_importer.objects.append(("model", _model_name))
+    _temp_importer.objects.append(("model", model_name))
+
+    mapping = {"model_start": model_start, "model_end": model_end}
     _temp_importer.object_parameter_values += [
-        ("model", _model_name, "model_start",
-         {"type": "date_time", "data": str(model_start)}, alternative_name),
-        ("model", _model_name, "model_end",
-         {"type": "date_time", "data": str(model_end)}, alternative_name),
+        ("model", model_name, k, {"type": "date_time", "data": v}, alternative)
+        if alternative else ("model", model_name, k, {"type": "date_time", "data": v})
+        for k, v in mapping.items() if v
     ]
+    _temp_importer.object_parameter_values += [
+        ("model", model_name, "roll_forward", {"type": "duration", "data": roll_forward}, alternative)
+        if alternative else ("model", model_name, "roll_forward", {"type": "duration", "data": roll_forward})
+    ] if roll_forward else []
 
     if _target_spineopt_db:
         _temp_importer.import_data(_target_spineopt_db)
@@ -145,11 +156,16 @@ def spineopt_temporal_block_structure(
     if not is_relative:
         data_type = "date_time"
 
-    mapping = {"block_start": block_start, "block_end": block_end, "resolution": resolution}
+    mapping = {"block_start": block_start, "block_end": block_end}
     _temp_importer.object_parameter_values += [
         ("temporal_block", temporal_block_name, k, {"type": data_type, "data": v}, alternative)
         if alternative else ("temporal_block", temporal_block_name, k, {"type": data_type, "data": v})
         for k, v in mapping.items() if v
+    ]
+    _temp_importer.object_parameter_values += [
+        ("temporal_block", temporal_block_name, "resolution", {"type": "duration", "data": resolution}, alternative)
+        if alternative
+        else ("temporal_block", temporal_block_name, "resolution", {"type": "duration", "data": resolution})
     ]
 
     _temp_importer.relationships.append(("model__temporal_block", (model_name, temporal_block_name)))
@@ -293,22 +309,27 @@ if __name__ == "__main__":
     )
     tb_importer += spineopt_temporal_block_structure(
         "CS_B3_75FI_excl_hydro_and_reserves", "tb4_fuel_look_ahead", is_relative=True, is_default=False,
-        resolution="1D", alternative=[tb_alternative, "for PtL nodes with storage"], _target_spineopt_db=spineopt_model_db,
+        resolution="1D", alternative=[tb_alternative, "for PtL nodes with storage"],
+        _target_spineopt_db=spineopt_model_db,
         node=['PtL_H2_tank', 'PtL_gasoline_tank'], unit=['PtL_gasoline_production']
     )
 
-    horizon_alt_1 = [
-        'Jan', pd.Timestamp(year=2021, month=1, day=1, hour=0), pd.Timestamp(year=2021, month=2, day=1, hour=0)
-    ]
     model_horizon_importer = spineopt_model_horizon_alternatives(
-        *horizon_alt_1, "CS_B3_75FI_excl_hydro_and_reserves", _target_spineopt_db=spineopt_model_db
+        "CS_B3_75FI_excl_hydro_and_reserves", roll_forward="8h", _target_spineopt_db=spineopt_model_db
     )
 
-    horizon_alt_2 = [
-        'Jul', pd.Timestamp(year=2021, month=7, day=1, hour=0), pd.Timestamp(year=2021, month=8, day=1, hour=0)
-    ]
-    model_horizon_importer += spineopt_model_horizon_alternatives(
-        *horizon_alt_2, "CS_B3_75FI_excl_hydro_and_reserves", _target_spineopt_db=spineopt_model_db
+    # example 1 of setting up date time strings
+    horizon_alt_1 = ['Jan', '2021-01-01 00:00:00', str(pd.Timestamp(year=2021, month=2, day=1, hour=0))]
+    spineopt_model_horizon_alternatives(
+        "CS_B3_75FI_excl_hydro_and_reserves", model_start=horizon_alt_1[1], model_end=horizon_alt_1[2],
+        alternative=horizon_alt_1[0], _target_spineopt_db=spineopt_model_db
+    )
+
+    # example 2 of setting up date time strings
+    horizon_alt_2 = ['Jul', str(datetime(2021, 7, 1, 0)), str(datetime(year=2021, month=8, day=1, hour=0))]
+    spineopt_model_horizon_alternatives(
+        "CS_B3_75FI_excl_hydro_and_reserves", model_start=horizon_alt_2[1], model_end=horizon_alt_2[2],
+        alternative=horizon_alt_2[0], _target_spineopt_db=spineopt_model_db
     )
 
     alternative_category_1 = [
