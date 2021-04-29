@@ -109,7 +109,7 @@ def modify_generation_capacity_of_units(
         # renew fix_units_on w.r.t. the new number of units if there is such in the original database
         fix_units_on = [
             x[3] for x in _spineopt_db_export['object_parameter_values']
-            if x[:3] == ('unit', _unit_name, 'fix_units_on')
+            if all([x[:3] == ('unit', _unit_name, 'fix_units_on'), x[-1] == search_alternative])
         ]
         if fix_units_on:
             _importer_spineopt.object_parameter_values.append(
@@ -138,7 +138,7 @@ def modify_generation_capacity_of_units(
             _new_source_flow_value = {"type": "time_series", "data": _new_source_flow}
 
         _importer_spineopt.object_parameter_values.append(
-            ('node', _source_node_name, 'demand', _new_source_flow_value, 'Base')
+            ('node', _source_node_name, 'demand', _new_source_flow_value, new_alternative)
         )
 
     _importer_spineopt.object_parameter_values.append(
