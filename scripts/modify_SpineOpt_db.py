@@ -12,17 +12,18 @@ from gdx2spinedb.import_ts import SpineDBImporter
 
 def adapt_start_up_costs_of_units(
         _spineopt_db_export, _unit_name: str, _demand_node_name: str, _new_total_capacity,
-        _new_number_of_units=1, _unit_constraint: str = None, _alternative='Base'
+        _new_number_of_units=1, _unit_constraint: str = None, search_alternative='Base', new_alternative: str = 'Base'
 ):
     """
     adapt the start up related costs info linearly per change of unit capacity
+    :param new_alternative:
+    :param search_alternative:
     :param _spineopt_db_export: an export dictionary for spineDB, obtained via gdx2spinedb.spinedb.export_spinedb()
     :param _unit_name:
     :param _demand_node_name:
     :param _new_total_capacity:
     :param _new_number_of_units:
     :param _unit_constraint: the unit_constraint that holds the corresponding start_up_coefficient of the unit
-    :param _alternative:
     :return:
     """
     # initialise a spinedb importer
@@ -31,20 +32,24 @@ def adapt_start_up_costs_of_units(
     _original_db = _spineopt_db_export
     _original_number_of_units = [
         x[3] for x in _original_db['object_parameter_values']
-        if all([x[:3] == ('unit', _unit_name, 'number_of_units'), x[-1] == _alternative])
+        if all([x[:3] == ('unit', _unit_name, 'number_of_units'), x[-1] == search_alternative])
     ][0]
     _original_unit_capacity = [
         x[3] for x in _original_db['relationship_parameter_values']
-        if all([x[:3] == ('unit__to_node', [_unit_name, _demand_node_name], 'unit_capacity'), x[-1] == _alternative])
+        if all([
+            x[:3] == ('unit__to_node', [_unit_name, _demand_node_name], 'unit_capacity'), x[-1] == search_alternative
+        ])
     ][0]
     _original_start_up_cost = [
         x[3] for x in _original_db['object_parameter_values']
-        if all([x[:3] == ('unit', _unit_name, 'start_up_cost'), x[-1] == _alternative])
+        if all([x[:3] == ('unit', _unit_name, 'start_up_cost'), x[-1] == search_alternative])
     ][0]
 
-    _new_start_up_cost = _new_total_capacity / _new_number_of_units / _original_unit_capacity * _original_start_up_cost
+    _new_unit_capacity = _new_total_capacity / _new_number_of_units
+    _new_start_up_cost = _new_unit_capacity / _original_unit_capacity * _original_start_up_cost
     _importer_spineopt.object_parameter_values += [
-        ("unit", _unit_name, "start_up_cost", _new_start_up_cost, _alternative),
+        ("unit", _unit_name, "start_up_cost", _new_start_up_cost, new_alternative),
+        ("unit", _unit_name, "number_of_units", _new_number_of_units, new_alternative),
     ]
 
     if _unit_constraint:
@@ -54,15 +59,15 @@ def adapt_start_up_costs_of_units(
                 x[:3] == (
                     'unit__unit_constraint', [_unit_name, _unit_constraint], 'units_started_up_coefficient'
                 ),
-                x[-1] == _alternative
+                x[-1] == search_alternative
             ])
         ][0]
 
-        _new_start_up_coefficient = _new_total_capacity / _new_number_of_units / _original_unit_capacity * _original_start_up_coefficient
+        _new_start_up_coefficient = _new_unit_capacity / _original_unit_capacity * _original_start_up_coefficient
         _importer_spineopt.relationship_parameter_values += [
             (
                 "unit__unit_constraint", [_unit_name, _unit_constraint], "units_started_up_coefficient",
-                _new_start_up_coefficient, _alternative
+                _new_start_up_coefficient, new_alternative
             ),
         ]
 
