@@ -28,6 +28,8 @@ def adapt_start_up_costs_of_units(
     """
     # initialise a spinedb importer
     _importer_spineopt = SpineDBImporter()
+    if new_alternative != search_alternative:
+        _importer_spineopt.alternatives.append(new_alternative)
 
     _original_db = _spineopt_db_export
     _original_number_of_units = [
