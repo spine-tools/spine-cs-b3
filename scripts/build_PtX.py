@@ -292,10 +292,10 @@ class SpineOptPowerToXModule:
 if __name__ == '__main__':
     default_alternative = "Base"
     
-    dir_spineopt_db = sys.argv[1]
+    dir_spineopt_db = sys.argv[0]
     spineopt_db = open_spinedb(dir_spineopt_db, create_new_db=False)
     
-    for dir_xlsx in sys.argv[2:]:
+    for dir_xlsx in sys.argv[1:]:
         xlsx = pd.ExcelFile(dir_xlsx)
 
         p2g = SpineOptPowerToXModule(

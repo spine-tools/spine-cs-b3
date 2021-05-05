@@ -18,13 +18,13 @@ from spineopt_structure import *
 
 default_alternative = "Base"
 
-dir_bb_spine_db, dir_spineopt_db = sys.argv[1:3]
+dir_bb_spine_db, dir_spineopt_db = sys.argv[:2]
 bb_spine_db = io_config.open_spinedb(dir_bb_spine_db, create_new_db=False)
 spineopt_db = io_config.open_spinedb(dir_spineopt_db, create_new_db=False)
 
-if len(sys.argv) >= 4:
+if len(sys.argv) >= 3:
     # the 4th argument is a placeholder for json template
-    dir_json = sys.argv[3]
+    dir_json = sys.argv[2]
     io_config.import_json(dir_json, spineopt_db)
 
 source_db = bb_spine_db.export_spinedb()
@@ -257,28 +257,28 @@ importer_spineopt.import_data(spineopt_db)
 # expand the capacity of some generation units (basically the renewables) to make the system self-sustained
 # according to the generation units under plan
 spineopt_db_export = spineopt_db.export_spinedb()
-# Nuclear generation units
-unit_name = '75FI_Nuclear'
-demand_node = '75FI'
-# the nuclear capacity will expand with one unit retiring and two to be committed (1600 + 1200MW),
-# i.e. the number of units remains (5 units) with the total capacity adding up to 5590MW
-new_total_capacity = 5594.0
-new_number_of_units = 6
-importer_spineopt = adapt_start_up_costs_of_units(
-    spineopt_db_export, unit_name, demand_node, new_total_capacity, _new_number_of_units=new_number_of_units,
-    _unit_constraint='Startup_fuel_75FI_Nuclear'
-)
-
-importer_spineopt.import_data(spineopt_db)
-
-importer_spineopt = modify_generation_capacity_of_units(
-    spineopt_db_export, unit_name, demand_node, new_total_capacity, _new_number_of_units=new_number_of_units
-)
-importer_spineopt.import_data(spineopt_db)
+# # Nuclear generation units
+# unit_name = '75FI_Nuclear'
+# demand_node = '75FI'
+# # the nuclear capacity will expand with one unit retiring and two to be committed (1600 + 1200MW),
+# # i.e. the number of units remains (5 units) with the total capacity adding up to 5590MW
+# new_total_capacity = 5594.0
+# new_number_of_units = 6
+# importer_spineopt = adapt_start_up_costs_of_units(
+#     spineopt_db_export, unit_name, demand_node, new_total_capacity, _new_number_of_units=new_number_of_units,
+#     _unit_constraint='Startup_fuel_75FI_Nuclear'
+# )
+#
+# importer_spineopt.import_data(spineopt_db)
+#
+# importer_spineopt = modify_generation_capacity_of_units(
+#     spineopt_db_export, unit_name, demand_node, new_total_capacity, _new_number_of_units=new_number_of_units
+# )
+# importer_spineopt.import_data(spineopt_db)
 
 # Wind power generation units
 importer_spineopt = modify_generation_capacity_of_units(
-    spineopt_db_export, '75FI_Wind', '75FI', 11330.0, _new_number_of_units=2614, _source_node_name='source_75FI_Wind'
+    spineopt_db_export, '75FI_Wind', '75FI', 4506.0, _new_number_of_units=1229, _source_node_name='source_75FI_Wind'
 )
 importer_spineopt.import_data(spineopt_db)
 
@@ -286,12 +286,37 @@ importer_spineopt.import_data(spineopt_db)
 importer_spineopt = SpineDBImporter()
 GasCHP_units = [x[1] for x in spineopt_db_export["objects"] if all([x[0] == "unit", "GasCHP" in x[1]])]
 importer_spineopt.object_parameter_values += [
-    ('unit', unit, 'number_of_units', 3, default_alternative) for unit in GasCHP_units
+    ('unit', unit, 'number_of_units', 2, default_alternative) for unit in GasCHP_units
 ]
 importer_spineopt.import_data(spineopt_db)
 
 # set up model and the related structure
-name_model = f"CS_B3_75FI_excl_hydro_and_reserves"
+name_model = f"CS_B3_75FI"
 # the following two functions come from spineopt_structure.py
 spineopt_b3_default_model(name_model, default_alternative, _target_spineopt_db=spineopt_db)
 default_report_output(_target_spineopt_db=spineopt_db, _model_name=name_model)
+
+# For hydropower units
+for (grid, node, unit) in [
+    ("elec", "75FI", "75FI_HydroReservoir"),
+    ("elec", "75FI", "75FI_HydroRoR"),
+    ("water", "75FI_Reservoir", "75FI_HydroReservoir"),
+    ("water", "75FI_RoR", "75FI_HydroRoR"),
+]:
+    importer_spineopt = unit_parameters(
+        source_db, grid, node, unit, time_index, _p_unit=True, _node_name_if_input=f"source_{unit}"
+    )
+    importer_spineopt.import_data(spineopt_db)
+# inflows for hydropower,
+# NB: this approach is feasible because the capacity factors (ts_cf) have been converted into inflows (ts_influx)
+for (node, unit) in [
+    ("75FI_Reservoir", "75FI_HydroReservoir"),
+    ("75FI_RoR", "75FI_HydroRoR"),
+]:
+    importer_spineopt = demand_time_series(
+        source_db, 'water', node, time_index, 'f00',
+        _auto_alternative=False, _base_alternative='f00', _node_rename=f"source_{unit}"
+    )
+    importer_spineopt.import_data(spineopt_db)
+    importer_spineopt = node_parameters(source_db, 'water', node, time_index, _node_rename=f"source_{unit}")
+    importer_spineopt.import_data(spineopt_db)

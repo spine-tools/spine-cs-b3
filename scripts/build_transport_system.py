@@ -834,10 +834,10 @@ if __name__ == '__main__':
         transport_module.import_to_spineopt()
         return None
 
-    dir_spineopt_db = sys.argv[1]
+    dir_spineopt_db = sys.argv[0]
     spineopt_db = open_spinedb(dir_spineopt_db, create_new_db=False)
     
-    for dir_xlsx in sys.argv[2:]:
+    for dir_xlsx in sys.argv[1:]:
         xlsx = pd.ExcelFile(dir_xlsx)
         transport = SpineOptTransportModule(
             2021, xlsx, _spinedb_importer=SpineDBImporter(), _target_spineopt_db=spineopt_db, _timeseries_repeat=False
