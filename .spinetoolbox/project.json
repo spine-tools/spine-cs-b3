@@ -130,7 +130,14 @@
                 "to": [
                     "SpineOpt_B3",
                     "left"
-                ]
+                ],
+                "resource_filters": {
+                    "db_url@spineopt_db": {
+                        "scenario_filter": [
+                            7
+                        ]
+                    }
+                }
             },
             {
                 "from": [
@@ -218,8 +225,8 @@
         "spineopt_db": {
             "type": "Data Store",
             "description": "",
-            "x": 29.40428778175238,
-            "y": -123.50617661661045,
+            "x": 32.065428995876516,
+            "y": -122.101458859531,
             "url": {
                 "dialect": "sqlite",
                 "username": "",
@@ -238,7 +245,7 @@
             "type": "Data Store",
             "description": "energy system data",
             "x": -19.16032259996456,
-            "y": 171.42009764891338,
+            "y": 172.82481540599287,
             "url": {
                 "dialect": "sqlite",
                 "username": "",
@@ -257,7 +264,7 @@
             "type": "Data Store",
             "description": "",
             "x": 301.04759156157553,
-            "y": -126.04131686493287,
+            "y": -124.63659910785339,
             "url": {
                 "dialect": "sqlite",
                 "username": "",
@@ -276,7 +283,7 @@
             "type": "Data Connection",
             "description": "VabiSys energy system datasets",
             "x": -330.0844011566833,
-            "y": 64.08503579039352,
+            "y": 65.489753547473,
             "references": [
                 {
                     "type": "path",
@@ -289,7 +296,7 @@
             "type": "Data Connection",
             "description": "some ts values to overwrite the main data",
             "x": -343.4847679290792,
-            "y": 179.04447999046383,
+            "y": 180.4491977475433,
             "references": [
                 {
                     "type": "path",
@@ -307,7 +314,7 @@
             "type": "Data Connection",
             "description": "",
             "x": -316.4688220437195,
-            "y": -79.94216207335276,
+            "y": -78.53744431627328,
             "references": [
                 {
                     "type": "path",
@@ -350,14 +357,14 @@
             "type": "Data Connection",
             "description": "",
             "x": 252.70702922389466,
-            "y": 53.59702399172956,
+            "y": 55.00174174880904,
             "references": []
         },
         "spineopt_model_builder": {
             "type": "Tool",
             "description": "",
             "x": 95.80258988827593,
-            "y": 43.7684392264896,
+            "y": 46.595611075965195,
             "specification": "spineopt_model_builder",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -379,7 +386,7 @@
             "type": "Tool",
             "description": "",
             "x": 174.8006783453111,
-            "y": -124.66383588373418,
+            "y": -124.58968873371674,
             "specification": "SpineOpt",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -400,7 +407,7 @@
             "type": "Tool",
             "description": "",
             "x": -72.44923480902176,
-            "y": -6.888406678846501,
+            "y": -5.483688921767019,
             "specification": "build_transport_sector",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -433,8 +440,8 @@
         "spineopt_PtX_builder": {
             "type": "Tool",
             "description": "",
-            "x": -152.78054745932818,
-            "y": -105.475906932221,
+            "x": -151.44997685226613,
+            "y": -104.07118917514151,
             "specification": "build_PtX",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -456,7 +463,7 @@
             "type": "Tool",
             "description": "",
             "x": -150.87319395601367,
-            "y": -201.48131926498883,
+            "y": -200.07660150790934,
             "specification": "build_spineopt_b3_scenarios",
             "execute_in_work": false,
             "cmd_line_args": [
@@ -469,8 +476,8 @@
         "bbgdx2spinedb_main": {
             "type": "Importer",
             "description": "For bbgdx v1.3",
-            "x": -192.63918554071276,
-            "y": 101.61592192449844,
+            "x": -192.63918554071273,
+            "y": 103.02063968157792,
             "specification": "gdx2spinedb_v1.3",
             "cancel_on_error": true,
             "file_selection": [
@@ -484,7 +491,7 @@
             "type": "Importer",
             "description": "For bbgdx v1.3",
             "x": -193.31210134271254,
-            "y": 202.67188375082986,
+            "y": 204.07660150790934,
             "specification": "gdx2spinedb_ts_cf_influx",
             "cancel_on_error": true,
             "file_selection": [
@@ -502,7 +509,7 @@
             "type": "Exporter",
             "description": "",
             "x": 370.98476792907917,
-            "y": -27.05521080363647,
+            "y": -25.65049304655699,
             "databases": [
                 {
                     "output_file_name": "Results - total costs.xlsx",

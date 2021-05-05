@@ -291,11 +291,10 @@ importer_spineopt.object_parameter_values += [
 importer_spineopt.import_data(spineopt_db)
 
 # set up model and the related structure
-name_model = f"CS_B3_75FI"
+name_model = f"CS_B3_75FI_excl_reserves"
 # the following two functions come from spineopt_structure.py
 spineopt_b3_default_model(name_model, default_alternative, _target_spineopt_db=spineopt_db)
 default_report_output(_target_spineopt_db=spineopt_db, _model_name=name_model)
-
 # For hydropower units
 for (grid, node, unit) in [
     ("elec", "75FI", "75FI_HydroReservoir"),
