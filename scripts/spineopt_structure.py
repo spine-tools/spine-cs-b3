@@ -216,7 +216,6 @@ def default_report_output(_target_spineopt_db=None, _model_name: str = None):
         ("output", "variable_om_costs"),
         ("output", "fixed_om_costs"),
         ("output", "taxes"),
-        ("output", "operating_costs"),
         ("output", "fuel_costs"),
         ("output", "unit_investment_costs"),
         ("output", "connection_investment_costs"),
