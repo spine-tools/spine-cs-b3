@@ -295,6 +295,11 @@
                     "type": "path",
                     "relative": true,
                     "path": "data/realized_forecasts.gdx"
+                },
+                {
+                    "type": "path",
+                    "relative": true,
+                    "path": "data/realized_hydro.gdx"
                 }
             ]
         },
@@ -478,13 +483,17 @@
         "bbgdx2spinedb_ts": {
             "type": "Importer",
             "description": "For bbgdx v1.3",
-            "x": -194.71681909979196,
-            "y": 205.4813192649888,
+            "x": -193.31210134271254,
+            "y": 202.67188375082986,
             "specification": "gdx2spinedb_ts_cf_influx",
             "cancel_on_error": true,
             "file_selection": [
                 [
                     "realized_forecasts.gdx",
+                    true
+                ],
+                [
+                    "realized_hydro.gdx",
                     true
                 ]
             ]
