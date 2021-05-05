@@ -98,7 +98,7 @@ def spineopt_model_horizon_alternatives(
     """
     _temp_importer = SpineDBImporter()
 
-    if alternative:
+    if alternative and alternative != 'Base':
         _temp_importer.alternatives.append(alternative)
     if all([alternative, not isinstance(alternative, str)]):
         # use only the name of alternative
@@ -144,7 +144,7 @@ def spineopt_temporal_block_structure(
     """
     _temp_importer = SpineDBImporter()
 
-    if alternative:
+    if alternative and alternative != 'Base':
         _temp_importer.alternatives.append(alternative)
     if all([alternative, not isinstance(alternative, str)]):
         # use only the name of alternative
@@ -285,20 +285,20 @@ def set_scenarios(_target_spineopt_db=None, *scenarios):
 
 if __name__ == "__main__":
     
-    dir_spineopt_db = sys.argv[1]
+    dir_spineopt_db = sys.argv[0]
     spineopt_model_db = io_config.open_spinedb(dir_spineopt_db, create_new_db=False)
 
     # model name is defined in build_SpineOpt_model_b3.py, names for storage nodes are defined in build_PtX.py
     tb_alternative = "low_resolution"
     # reference alternative
     tb_importer = spineopt_temporal_block_structure(
-        "CS_B3_75FI", "tb3_fuel", is_relative=True, is_default=False,
+        "CS_B3_75FI", "tb3_fuel", is_relative=True, is_default=False, alternative='Base',
         block_start="0h", block_end="1D", resolution="1h",
         node=['PtL_H2_tank', 'PtL_gasoline_tank'], unit=['PtL_gasoline_production']
     )
     tb_importer += spineopt_temporal_block_structure(
-        "CS_B3_75FI", "tb4_fuel_look_ahead", is_relative=True, is_default=False,
-        block_start="1D", block_end="2D", resolution="8h", _target_spineopt_db=spineopt_model_db,
+        "CS_B3_75FI", "tb4_fuel_look_ahead", is_relative=True, is_default=False, alternative='Base',
+        block_start="1D", block_end="3D", resolution="8h", _target_spineopt_db=spineopt_model_db,
         node=['PtL_H2_tank', 'PtL_gasoline_tank'], unit=['PtL_gasoline_production']
     )
     # active alternative
@@ -315,7 +315,7 @@ if __name__ == "__main__":
     )
 
     model_horizon_importer = spineopt_model_horizon_alternatives(
-        "CS_B3_75FI", roll_forward="1D", _target_spineopt_db=spineopt_model_db
+        "CS_B3_75FI", roll_forward="1D", _target_spineopt_db=spineopt_model_db, alternative='Base'
     )
 
     # # example 1 of setting up date time strings
