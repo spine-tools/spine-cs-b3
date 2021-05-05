@@ -254,7 +254,7 @@ def build_scenario(scenario, *affiliated_alternatives, alternatives_to_be_create
                                     the alternatives are added in the written rank per se,
                                     the rightmost alternative prioritises over the others in parameter values
     :param alternatives_to_be_created: ['name_alternative_1', ('name_alternative_2', 'description_2')]
-    :return: an instance of gdx2spinedb.spinedb.SpineIO
+    :return: an instance of gdx2spinedb.import_ts.SpineDBImporter
     """
     if alternatives_to_be_created is None:
         alternatives_to_be_created = []
