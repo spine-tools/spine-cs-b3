@@ -285,7 +285,7 @@ def set_scenarios(_target_spineopt_db=None, *scenarios):
 
 if __name__ == "__main__":
     
-    dir_spineopt_db = sys.argv[1]
+    dir_spineopt_db = sys.argv[0]
     spineopt_model_db = io_config.open_spinedb(dir_spineopt_db, create_new_db=False)
 
     # model name is defined in build_SpineOpt_model_b3.py, names for storage nodes are defined in build_PtX.py

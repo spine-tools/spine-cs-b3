@@ -18,13 +18,13 @@ from spineopt_structure import *
 
 default_alternative = "Base"
 
-dir_bb_spine_db, dir_spineopt_db = sys.argv[1:3]
+dir_bb_spine_db, dir_spineopt_db = sys.argv[:2]
 bb_spine_db = io_config.open_spinedb(dir_bb_spine_db, create_new_db=False)
 spineopt_db = io_config.open_spinedb(dir_spineopt_db, create_new_db=False)
 
-if len(sys.argv) >= 4:
+if len(sys.argv) >= 3:
     # the 4th argument is a placeholder for json template
-    dir_json = sys.argv[3]
+    dir_json = sys.argv[2]
     io_config.import_json(dir_json, spineopt_db)
 
 source_db = bb_spine_db.export_spinedb()
