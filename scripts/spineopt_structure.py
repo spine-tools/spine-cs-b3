@@ -293,21 +293,21 @@ if __name__ == "__main__":
     # reference alternative
     tb_importer = spineopt_temporal_block_structure(
         "CS_B3_75FI", "tb3_fuel", is_relative=True, is_default=False, alternative='Base',
-        block_start="0h", block_end="1D", resolution="1h",
+        block_start="0h", block_end="1D", resolution="1h", _target_spineopt_db=spineopt_model_db,
         node=['PtL_H2_tank', 'PtL_gasoline_tank'], unit=['PtL_gasoline_production']
     )
-    tb_importer += spineopt_temporal_block_structure(
+    tb_importer = spineopt_temporal_block_structure(
         "CS_B3_75FI", "tb4_fuel_look_ahead", is_relative=True, is_default=False, alternative='Base',
         block_start="1D", block_end="3D", resolution="8h", _target_spineopt_db=spineopt_model_db,
         node=['PtL_H2_tank', 'PtL_gasoline_tank'], unit=['PtL_gasoline_production']
     )
     # active alternative
     tb_importer = spineopt_temporal_block_structure(
-        "CS_B3_75FI", "tb3_fuel", is_relative=True, is_default=False,
+        "CS_B3_75FI", "tb3_fuel", is_relative=True, is_default=False, _target_spineopt_db=spineopt_model_db,
         resolution="8h", alternative=[tb_alternative, "for PtL nodes with storage"],
         node=['PtL_H2_tank', 'PtL_gasoline_tank'], unit=['PtL_gasoline_production']
     )
-    tb_importer += spineopt_temporal_block_structure(
+    tb_importer = spineopt_temporal_block_structure(
         "CS_B3_75FI", "tb4_fuel_look_ahead", is_relative=True, is_default=False,
         resolution="1D", alternative=[tb_alternative, "for PtL nodes with storage"],
         _target_spineopt_db=spineopt_model_db,
