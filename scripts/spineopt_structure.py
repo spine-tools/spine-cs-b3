@@ -98,7 +98,7 @@ def spineopt_model_horizon_alternatives(
     """
     _temp_importer = SpineDBImporter()
 
-    if alternative:
+    if alternative and alternative != 'Base':
         _temp_importer.alternatives.append(alternative)
     if all([alternative, not isinstance(alternative, str)]):
         # use only the name of alternative
@@ -144,7 +144,7 @@ def spineopt_temporal_block_structure(
     """
     _temp_importer = SpineDBImporter()
 
-    if alternative:
+    if alternative and alternative != 'Base':
         _temp_importer.alternatives.append(alternative)
     if all([alternative, not isinstance(alternative, str)]):
         # use only the name of alternative
@@ -254,7 +254,7 @@ def build_scenario(scenario, *affiliated_alternatives, alternatives_to_be_create
                                     the alternatives are added in the written rank per se,
                                     the rightmost alternative prioritises over the others in parameter values
     :param alternatives_to_be_created: ['name_alternative_1', ('name_alternative_2', 'description_2')]
-    :return: an instance of gdx2spinedb.spinedb.SpineIO
+    :return: an instance of gdx2spinedb.import_ts.SpineDBImporter
     """
     if alternatives_to_be_created is None:
         alternatives_to_be_created = []
@@ -293,18 +293,18 @@ if __name__ == "__main__":
     # reference alternative
     tb_importer = spineopt_temporal_block_structure(
         "CS_B3_75FI_excl_hydro_and_reserves", "tb3_fuel", is_relative=True, is_default=False,
-        block_start="0h", block_end="1D", resolution="1h",
+        block_start="0h", block_end="1D", resolution="1h", alternative='Base', _target_spineopt_db=spineopt_model_db,
         node=['PtL_H2_tank', 'PtL_gasoline_tank'], unit=['PtL_gasoline_production']
     )
     tb_importer += spineopt_temporal_block_structure(
         "CS_B3_75FI_excl_hydro_and_reserves", "tb4_fuel_look_ahead", is_relative=True, is_default=False,
-        block_start="1D", block_end="2D", resolution="8h", _target_spineopt_db=spineopt_model_db,
+        block_start="1D", block_end="2D", resolution="8h", alternative='Base', _target_spineopt_db=spineopt_model_db,
         node=['PtL_H2_tank', 'PtL_gasoline_tank'], unit=['PtL_gasoline_production']
     )
     # active alternative
     tb_importer = spineopt_temporal_block_structure(
-        "CS_B3_75FI_excl_hydro_and_reserves", "tb3_fuel", is_relative=True, is_default=False,
-        resolution="8h", alternative=[tb_alternative, "for PtL nodes with storage"],
+        "CS_B3_75FI_excl_hydro_and_reserves", "tb3_fuel", is_relative=True, is_default=False, resolution="8h",
+        alternative=[tb_alternative, "for PtL nodes with storage"], _target_spineopt_db=spineopt_model_db,
         node=['PtL_H2_tank', 'PtL_gasoline_tank'], unit=['PtL_gasoline_production']
     )
     tb_importer += spineopt_temporal_block_structure(
@@ -315,7 +315,8 @@ if __name__ == "__main__":
     )
 
     model_horizon_importer = spineopt_model_horizon_alternatives(
-        "CS_B3_75FI_excl_hydro_and_reserves", roll_forward="8h", _target_spineopt_db=spineopt_model_db
+        "CS_B3_75FI_excl_hydro_and_reserves", roll_forward="8h",
+        _target_spineopt_db=spineopt_model_db, alternative='Base'
     )
 
     # example 1 of setting up date time strings
@@ -342,8 +343,9 @@ if __name__ == "__main__":
     scenario_base = build_scenario(
         ('Base_energy_system', True, 'electricity and heat only'), 'Base', 'no_transport', 'no_flex_discharge', 'no_PtL'
     )
+
     scenarios_base_transport = SpineDBImporter()
-    for alt_horizon in [horizon_alt_1, horizon_alt_2]:
+    for alt_horizon in [horizon_alt_1[0], horizon_alt_2[0]]:
         for alt_transport in alternative_category_1[1:]:
             for alt_discharge in alternative_category_2:
                 for alt_ptl in alternative_category_3:
