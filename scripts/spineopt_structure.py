@@ -288,34 +288,36 @@ if __name__ == "__main__":
     spineopt_model_db = io_config.open_spinedb(dir_spineopt_db, create_new_db=False)
 
     # model name is defined in build_SpineOpt_model_b3.py, names for storage nodes are defined in build_PtX.py
+    name_model = "CS_B3_75FI_excl_reserves"
+    spineopt_b3_default_model(name_model, "Base", _target_spineopt_db=spineopt_model_db)
+
     tb_alternative = "low_resolution"
     # reference alternative
     tb_importer = spineopt_temporal_block_structure(
-        "CS_B3_75FI_excl_reserves", "tb3_fuel", is_relative=True, is_default=False,
+        name_model, "tb3_fuel", is_relative=True, is_default=False,
         block_start="0h", block_end="1D", resolution="1h", alternative='Base', _target_spineopt_db=spineopt_model_db,
         node=['PtL_H2_tank', 'PtL_gasoline_tank'], unit=['PtL_gasoline_production']
     )
     tb_importer += spineopt_temporal_block_structure(
-        "CS_B3_75FI_excl_reserves", "tb4_fuel_look_ahead", is_relative=True, is_default=False,
+        name_model, "tb4_fuel_look_ahead", is_relative=True, is_default=False,
         block_start="1D", block_end="2D", resolution="8h", alternative='Base', _target_spineopt_db=spineopt_model_db,
         node=['PtL_H2_tank', 'PtL_gasoline_tank'], unit=['PtL_gasoline_production']
     )
     # active alternative
     tb_importer = spineopt_temporal_block_structure(
-        "CS_B3_75FI_excl_reserves", "tb3_fuel", is_relative=True, is_default=False, resolution="8h",
+        name_model, "tb3_fuel", is_relative=True, is_default=False, resolution="8h",
         alternative=[tb_alternative, "for PtL nodes with storage"], _target_spineopt_db=spineopt_model_db,
         node=['PtL_H2_tank', 'PtL_gasoline_tank'], unit=['PtL_gasoline_production']
     )
     tb_importer += spineopt_temporal_block_structure(
-        "CS_B3_75FI_excl_reserves", "tb4_fuel_look_ahead", is_relative=True, is_default=False,
-        resolution="1D", alternative=[tb_alternative, "for PtL nodes with storage"],
+        name_model, "tb4_fuel_look_ahead", is_relative=True, is_default=False,
+        resolution="12h", alternative=[tb_alternative, "for PtL nodes with storage"],
         _target_spineopt_db=spineopt_model_db,
         node=['PtL_H2_tank', 'PtL_gasoline_tank'], unit=['PtL_gasoline_production']
     )
 
     model_horizon_importer = spineopt_model_horizon_alternatives(
-        "CS_B3_75FI_excl_reserves", roll_forward="8h",
-        _target_spineopt_db=spineopt_model_db, alternative='Base'
+        name_model, roll_forward="1D", _target_spineopt_db=spineopt_model_db, alternative='Base'
     )
 
     alternative_category_1 = [
