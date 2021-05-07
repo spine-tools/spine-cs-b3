@@ -257,28 +257,28 @@ importer_spineopt.import_data(spineopt_db)
 # expand the capacity of some generation units (basically the renewables) to make the system self-sustained
 # according to the generation units under plan
 spineopt_db_export = spineopt_db.export_spinedb()
-# # Nuclear generation units
-# unit_name = '75FI_Nuclear'
-# demand_node = '75FI'
-# # the nuclear capacity will expand with one unit retiring and two to be committed (1600 + 1200MW),
-# # i.e. the number of units remains (5 units) with the total capacity adding up to 5590MW
-# new_total_capacity = 5594.0
-# new_number_of_units = 6
-# importer_spineopt = adapt_start_up_costs_of_units(
-#     spineopt_db_export, unit_name, demand_node, new_total_capacity, _new_number_of_units=new_number_of_units,
-#     _unit_constraint='Startup_fuel_75FI_Nuclear'
-# )
-#
-# importer_spineopt.import_data(spineopt_db)
-#
-# importer_spineopt = modify_generation_capacity_of_units(
-#     spineopt_db_export, unit_name, demand_node, new_total_capacity, _new_number_of_units=new_number_of_units
-# )
-# importer_spineopt.import_data(spineopt_db)
+# Nuclear generation units
+unit_name = '75FI_Nuclear'
+demand_node = '75FI'
+# the nuclear capacity will expand with one unit retiring and two to be committed (1600 + 1200MW),
+# i.e. the number of units remains (5 units) with the total capacity adding up to 5590MW
+new_total_capacity = 4394.0
+new_number_of_units = 5
+importer_spineopt = adapt_start_up_costs_of_units(
+    spineopt_db_export, unit_name, demand_node, new_total_capacity, _new_number_of_units=new_number_of_units,
+    _unit_constraint='Startup_fuel_75FI_Nuclear'
+)
+
+importer_spineopt.import_data(spineopt_db)
+
+importer_spineopt = modify_generation_capacity_of_units(
+    spineopt_db_export, unit_name, demand_node, new_total_capacity, _new_number_of_units=new_number_of_units
+)
+importer_spineopt.import_data(spineopt_db)
 
 # Wind power generation units
 importer_spineopt = modify_generation_capacity_of_units(
-    spineopt_db_export, '75FI_Wind', '75FI', 4506.0, _new_number_of_units=1229, _source_node_name='source_75FI_Wind'
+    spineopt_db_export, '75FI_Wind', '75FI', 11330.0, _new_number_of_units=2694, _source_node_name='source_75FI_Wind'
 )
 importer_spineopt.import_data(spineopt_db)
 
