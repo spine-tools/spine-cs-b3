@@ -60,8 +60,8 @@ def spineopt_b3_default_model(_model_name: str, _alternative, _target_spineopt_d
         ("temporal_block", name_temporal_block_1, "block_end", {"type": "duration", "data": "1D"}, _alternative),
         ("temporal_block", name_temporal_block_1, "resolution", {"type": "duration", "data": "1h"}, _alternative),
         ("temporal_block", name_temporal_block_2, "block_start", {"type": "duration", "data": "1D"}, _alternative),
-        ("temporal_block", name_temporal_block_2, "block_end", {"type": "duration", "data": "2D"}, _alternative),
-        ("temporal_block", name_temporal_block_2, "resolution", {"type": "duration", "data": "8h"}, _alternative),
+        ("temporal_block", name_temporal_block_2, "block_end", {"type": "duration", "data": "3D"}, _alternative),
+        ("temporal_block", name_temporal_block_2, "resolution", {"type": "duration", "data": "12h"}, _alternative),
     ]
 
     _temp_importer.relationships += [
@@ -300,7 +300,7 @@ if __name__ == "__main__":
     )
     tb_importer += spineopt_temporal_block_structure(
         name_model, "tb4_fuel_look_ahead", is_relative=True, is_default=False,
-        block_start="1D", block_end="2D", resolution="8h", alternative='Base', _target_spineopt_db=spineopt_model_db,
+        block_start="1D", block_end="3D", resolution="12h", alternative='Base', _target_spineopt_db=spineopt_model_db,
         node=['PtL_H2_tank', 'PtL_gasoline_tank'], unit=['PtL_gasoline_production']
     )
     # active alternative
@@ -311,7 +311,7 @@ if __name__ == "__main__":
     )
     tb_importer += spineopt_temporal_block_structure(
         name_model, "tb4_fuel_look_ahead", is_relative=True, is_default=False,
-        resolution="12h", alternative=[tb_alternative, "for PtL nodes with storage"],
+        resolution="1D", alternative=[tb_alternative, "for PtL nodes with storage"],
         _target_spineopt_db=spineopt_model_db,
         node=['PtL_H2_tank', 'PtL_gasoline_tank'], unit=['PtL_gasoline_production']
     )
