@@ -7,4 +7,6 @@ output/
 #items/
 *.sqlite
 *.gdx
+*.pyc
+*.bak
 #project.json
